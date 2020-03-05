@@ -1,15 +1,98 @@
-const initialData = {
+const INITIAL_CONTEXT = {
     items: {
-        'asset-1': {id: 'asset-1', content: 'DAI', type: 'asset', index: '0'},
-        'expiration-2': {id: 'expiration-2', content: 'expiration 2', type: 'expiration', index: '2',},
-        'address-3': {id: 'address-3', content: 'address 3', type: 'address', index: '3',},
-        'asset-2': {id: 'asset-2', content: 'MKR', type: 'asset', index: '0'},
+        'asset-dai': {id: 'asset-dai', content: 'DAI', type: 'asset', index: 'asset', payload: 'DAI'},
+        'expiration-2': {id: 'expiration-2', content: '1609459200', type: 'expiration', index: 'expiration', payload: '1609459200',},
+        'address-3': {id: 'address-3', content: 'address 3', type: 'address', index: 'address', payload: 'carbonprotocol.eth',},
+        'asset-mkr': {id: 'asset-mkr', content: 'MKR', type: 'asset', index: 'asset', payload: 'MKR',},
+        'asset-snx': {id: 'asset-snx', content: 'SNX', type: 'asset', index: '', payload: 'SNX'},
+        'asset-u': {
+            id: 'asset-u', 
+            content: 'U', 
+            type: 'asset', 
+            index: 'asset',
+            iconName: 'u.png',
+            mainnet: '',
+            rinkeby: '',
+            payload: 'U',
+        },
+        'asset-s': {
+            id: 'asset-s', 
+            content: 'S', 
+            type: 'asset', 
+            index: 'asset',
+            iconName: 's.png',
+            mainnet: '',
+            rinkeby: '',
+            payload: 'S',
+        },
+    },
+    assets: {
+        'assetIds' : ['asset-snx', 'asset-dai', 'asset-mkr', 'asset-u', 'asset-s',],
+        'asset-snx': {
+                        id: 'asset-snx', 
+                        content: 'SNX', 
+                        type: 'asset', 
+                        index: 'asset',
+                        iconName: 'snx.png',
+                        mainnet: '',
+                        rinkeby: '',
+                        payload: 'SNX',
+                    },
+        'asset-dai': {
+                        id: 'asset-dai', 
+                        content: 'DAI', 
+                        type: 'asset', 
+                        index: 'asset',
+                        iconName: 'dai.png',
+                        mainnet: '',
+                        rinkeby: '',
+                        payload: 'DAI',
+                    },
+        'asset-mkr': {
+                        id: 'asset-mkr', 
+                        content: 'MKR', 
+                        type: 'asset', 
+                        index: 'asset',
+                        iconName: 'mkr.png',
+                        mainnet: '',
+                        rinkeby: '',
+                        payload: 'MKR',
+                    },
+        'asset-u': {
+                        id: 'asset-u', 
+                        content: 'U', 
+                        type: 'asset', 
+                        index: 'asset',
+                        iconName: 'u.png',
+                        mainnet: '',
+                        rinkeby: '',
+                        payload: 'U',
+                    },
+        'asset-s': {
+                        id: 'asset-s', 
+                        content: 'S', 
+                        type: 'asset', 
+                        index: 'asset',
+                        iconName: 's.png',
+                        mainnet: '',
+                        rinkeby: '',
+                        payload: 'S',
+                    },
+                    
+    },
+    expirations: {
+        'expirationIds': ['expiration-2'],
+        'expiration-2': {id: 'expiration-2', content: '1609459200', type: 'expiration', index: 'expiration', payload: '1609459200',},
+    },
+    addresses: {
+        'addressIds': ['address-3'],
+        'address-3': {id: 'address-3', content: 'address 3', type: 'address', index: 'address',},
     },
     columns: {
         'asset': {
             id: 'asset',
             title: 'Assets',
-            itemIds: ['asset-1', 'asset-2',],
+            itemIds: ['asset-dai', 'asset-mkr', 'asset-s', 'asset-u'],
             board: false,
         },
         'board': {
@@ -34,4 +117,4 @@ const initialData = {
     columnOrder: ['asset', 'expiration', 'address', 'board',],
 };
 
-export default initialData;
+export default INITIAL_CONTEXT;

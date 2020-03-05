@@ -7,6 +7,10 @@ export const colors = {
     lightblue: "#F0F8FF",
     palered: "#F08080",
     lightred: "#FFA07A",
+    lightgreen: "#00FA9A",
+    green: "#98FB98",
+    disabledGreen: '#8FBC8F',
+    grey: '#C0C0C0',
 }
 
 const breakpoints = createBreakpoints({
@@ -74,7 +78,10 @@ const mainTheme = {
         background: {
             paper: colors.white,
             default: colors.white,
-        }
+        },
+        button: {
+            main: colors.lightgreen,
+        },
     },
     breakpoints: breakpoints,
 }
