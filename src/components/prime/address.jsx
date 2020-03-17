@@ -1,35 +1,16 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
-import { 
-    Card,
-    Typography,
-    Grid,
-    Box,
-    Button,
-    IconButton
-} from '@material-ui/core';
 import { colors } from '../../theme/theme';
 import { Draggable } from 'react-beautiful-dnd';
-import DeleteIcon from '@material-ui/icons/Delete';
+import Card from '@material-ui/core/Card';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
 import RestoreIcon from '@material-ui/icons/Restore';
-
-
-
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const styles = theme => ({
-    root: {
-        flex: 1,
-        display: 'flex',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
-        margin: '16px',
-        [theme.breakpoints.up('sm')]: {
-            flexDirection: 'row',
-        }
-    },
     item: {
         flex: '1',
         height: '2.5vh',
@@ -40,6 +21,7 @@ const styles = theme => ({
         padding: '24px',
         margin: '8px',
         cursor: 'pointer',
+        alignItems: 'center',
         transition: 'background-color 0.2s linear',
         [theme.breakpoints.up('sm')]: {
             height: '2.5vh',
@@ -48,9 +30,9 @@ const styles = theme => ({
         },
     },
     prime: {
-        backgroundColor: props => (props.isDragDisabled ? colors.palered : colors.white),
+        backgroundColor: colors.primary,
         '&:hover': {
-            backgroundColor: colors.lightblue,
+            backgroundColor: colors.lightSuccess,
             '& .title': {
                 color: colors.blue
             },
@@ -66,66 +48,33 @@ const styles = theme => ({
         }
     },
     title: {
+        color: colors.banner,
     },
-    dragging: {
-        opacity: 1,
-        cursor: 'pointer',
-        flex: 1,
-        display: 'flex',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
-        margin: '16px',
-        backgroundColor: colors.palered,
-        [theme.breakpoints.up('sm')]: {
-            flexDirection: 'row',
-        }
-    },
-    icon: {
-        display: 'flex',
-        //paddingLeft: '10%',
+    onBoard: {
+        backgroundColor: colors.green,
     },
 });
 
-
 class Address extends Component {
-
+    constructor(props) {
+        super(props);
+    };
     
     render() {
-        const { classes, t, boardItems, item, index, handleUndo, column } = this.props;
-        let isDragDisabled;
-        let counter = 0;
-        // CONDITIONAL LOGIC FOR ASSET COMPONENTS
-        if(boardItems) {
-            let boardLimit = 1;
-            for(var i = 0; i < boardItems.length; i++) {
-                let _boardItem = (boardItems[i]).split('-')[0];
-                // if the board item is an asset and the item id is not the board item,
-                // then dont let the asset components be draggable.
-                if(_boardItem === 'address') {
-                    counter++;
-                }
-
-                if(counter >= boardLimit) {
-                    isDragDisabled = true;
-                    console.log('BOARD LIMIT REACHED FOR ADDRESS')
-                    console.log('ITEM ID IS: ', item.id)
-                } else {
-                    isDragDisabled = false;
-                }
-            }
-            
-        } else {
-            isDragDisabled = false;
-        }
+        const { classes, item, index, handleUndo, column, handleDelete, isOnBoard } = this.props;
+    
+        let isDragDisabled = false;
+        let onBoard = isOnBoard(item.id, column.id);
 
         return (
+            /* ITEM CONTAINER */
             <Draggable 
                 draggableId={item.id} 
                 index={index}
                 isDragDisabled={isDragDisabled}
             >
+
+                {/* ITEM CONTENT */}
                 {(provided, snapshot) => (
                     <Box
                         {...provided.draggableProps}
@@ -133,25 +82,42 @@ class Address extends Component {
                         ref={provided.innerRef}
                         isDragging={snapshot.isDragging}
                     >
-                        <Card className={`${classes.item} ${classes.prime}`}>
+
+                        {/* ITEM CARD */}
+                        <Card 
+                            className={
+                                (onBoard)
+                                ? `${classes.item} ${classes.onBoard}`
+                                    :  `${classes.item} ${classes.prime}`
+                            }
+                        >
+
+                            {/* TITLE */}
                             <Typography variant={'h2'} className={`${classes.title}`}>
                                 {this.props.item.content}
                             </Typography>
-                            <Typography variant={'h3'} className={`${classes.icon}`}>
-                                {this.props.item.type == 'asset' ? 'true' : 'false'}
-                            </Typography>
+
+                            {/* FUNCTIONS */}
                             <IconButton
-                                color='primary'
-                                onClick={() => handleUndo(item.id, column.id)} 
+                                color={colors.background}
+                                onClick={() => handleUndo(item.id, column.id)}
                             >
                                 <RestoreIcon />
                             </IconButton>
+                            <IconButton
+                                color={colors.background}
+                                onClick={() => handleDelete(item.id, column.id)} 
+                            >
+                                <HighlightOffIcon />
+                            </IconButton>
+
                         </Card>
+                        
                     </Box>
                 )}
             </Draggable>
         );
-    }
-}
+    };
+};
 
 export default (withRouter(withStyles(styles)(Address)));

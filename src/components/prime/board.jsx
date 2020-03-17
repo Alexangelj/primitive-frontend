@@ -8,22 +8,22 @@ import Box from '@material-ui/core/Box';
 import Asset from './asset';
 import Expiration from './expiration';
 import Address from './address';
-
+import AddForm from './addForm';
 
 const styles = theme => ({
     board: {
         display: 'flex',
         margin: '16px',
-        width: '90%',
-        height: '30%',
+        marginRight: '32px',
+        width: '20%',
+        height: '20%',
         minWidth: '10%',
         minHeight: '10%',
-        flexWrap: 'wrap',
         flexDirection: 'row',
         [theme.breakpoints.up('sm')]: {
             flexDirection: 'column',
-            width: '30%',
         },
+        borderRadius: '0px',
     },
     list: {
         padding: '16px',
@@ -36,16 +36,16 @@ const styles = theme => ({
         [theme.breakpoints.up('sm')]: {
             minWidth: '10vh',
         },
-        borderColor: colors.primary,
     },
     prime: {
-        backgroundColor: colors.background,
+        backgroundColor: colors.banner,
         '&:hover': {
+            backgroundColor: colors.highlight,
             '& .title': {
                 color: colors.primary
             },
             '& .icon': {
-                color: colors.blue
+                color: colors.primary
             },
         },
         '& .title': {
@@ -53,68 +53,67 @@ const styles = theme => ({
             fontWeight: '600',
         },
         '& .icon': {
-            color: colors.blue
+            color: colors.primary
         }
     },
     title: {
+        display: 'flex',
         padding: '16px',
         paddingBottom: '0px',
         justifyContent: 'center',
-        alignItems: 'center',
-        fontWeight: '500',
+        fontWeight: '600',
         [theme.breakpoints.up('sm')]: {
             paddingBottom: '8px'
         },
         backgroundColor: colors.banner,
-        color: colors.primary,
-        display: 'flex',
-        justifyContent: 'space-evenly',
     },
-    disabledBoard: {
-        backgroundColor: colors.grey,
-        '&:hover': {
-            backgroundColor: colors.grey,
-            color: colors.grey,
-            '& .title': {
-                color: colors.grey
-            },
-            '& .icon': {
-                color: colors.blue
-            },
-        },
-        '& .title': {
-            color: colors.grey,
-            fontWeight: '600',
-        },
-        '& .icon': {
-            color: colors.blue
-        },
+    addButtons: {
         display: 'flex',
-        margin: '16px',
-        width: '90%',
-        height: '30%',
-        minWidth: '10%',
-        minHeight: '10%',
-        flexWrap: 'wrap',
         flexDirection: 'row',
-        [theme.breakpoints.up('sm')]: {
-            flexDirection: 'column',
-            width: '30%',
-        },
+        justifyContent: 'space-evenly',
+        backgroundColor: colors.banner,
     },
-    disabledList: {
-        padding: '16px',
-        minHeight: '10vh',
-        minWidth: '30vh',
-        backgroundColor: colors.grey,
+
+    /* <AddForm/> DEPENDENCY CLASSES */
+    iconButton: {
+        color: colors.success,
+        backgroundColor: 'transparent',
+        opacity: '100%',
         '&:hover': {
-            backgroundColor: colors.grey,
+            color: colors.lightgreen,
+            backgroundColor: 'transparent',
         },
-        [theme.breakpoints.up('sm')]: {
-            minWidth: '10vh',
-        },
-        borderColor: colors.primary,
+        borderRadius: '0%',
     },
+    select: {
+        display: 'flex',
+        width: '100%',
+    },
+    formControl: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.white,
+        '&:hover': {
+            backgroundColor: colors.lightblue,
+        },
+        border: '0px',
+        color: colors.primary,
+    },
+    inputLabel: {
+        bottomBorder: '0px',
+    },
+    menuItem: {
+        backgroundColor: props => props.isDuplicate ? colors.palered : colors.lightblue,
+        color: colors.primary,
+        backgroundColor: colors.background,
+        '&:hover': {
+            color: colors.primary,
+            backgroundColor: colors.background,
+        },
+    },
+
+    
 });
 
 class InnerList extends PureComponent {
@@ -126,7 +125,7 @@ class InnerList extends PureComponent {
     }
 
     render () {
-        const { boardItems, column, handleUndo, handleDelete, isDragDisabled } = this.props;
+        const { boardItems, column, handleUndo, handleDelete } = this.props;
         return (
             this.props.items.map((item, index) => {
                 let _item = (item.id).split('-')[0];
@@ -144,7 +143,6 @@ class InnerList extends PureComponent {
                                 isOnBoard={this.props.isOnBoard}
                             />
                         );
-                        break;
                     case 'expiration':
                         return (
                             <Expiration 
@@ -158,7 +156,6 @@ class InnerList extends PureComponent {
                                 isOnBoard={this.props.isOnBoard}
                             />
                         );
-                        break;
                     case 'address':
                         return (
                             <Address 
@@ -172,7 +169,6 @@ class InnerList extends PureComponent {
                                 isOnBoard={this.props.isOnBoard}
                             />
                         );
-                        break;
                 };
             })
         );
@@ -197,30 +193,55 @@ class Column extends Component {
     render() {
         const { 
             classes,
-            column,
-            items,
-            boardItems,
             isDropDisabled,
+            column, 
             handleUndo, 
             handleAdd,
             handleDelete,
-            index
+            items,
+            assetMap,
+            expirationMap,
+            boardItems,
         } = this.props;
+
+        let assetForm = <AddForm
+                            items={items}
+                            columnId={'start'}
+                            name={'asset'}
+                            handleAddForm={this.handleAddForm}
+                            classes={classes}
+                            assetMap={assetMap}
+                            expirationMap={expirationMap}
+                        />
+        let expirationForm =    <AddForm
+                                    items={items}
+                                    columnId={'start'}
+                                    name={'expiration'}
+                                    handleAddForm={this.handleAddForm}
+                                    classes={classes}
+                                    assetMap={assetMap}
+                                    expirationMap={expirationMap}
+                                />
+        let addressForm =   <AddForm
+                                items={items}
+                                columnId={'address'}
+                                name={'address'}
+                                handleAddForm={this.handleAddForm}
+                                classes={classes}
+                                assetMap={assetMap}
+                                expirationMap={expirationMap}
+                            />
+
         return(
-            /* CELL CONTAINER */
-            <Card className={
-                (isDropDisabled) 
-                ? (index < 4)
-                    ? `${classes.board} ${classes.prime}`
-                        : classes.disabledBoard 
-                            :`${classes.board} ${classes.prime}`}>
-                
-                {/* TITLES */}
+            /* BOARD CONTAINER */
+            <Card className={`${classes.board} ${classes.prime}`}>
+                    
+                {/* BOARD TITLE */}
                 <Typography variant={'h1'} className={`${classes.title} title`}>
                     {column.title}
                 </Typography>
-                
-                {/* CELL CONTENT */}
+
+                {/* BOARD CONTENT */}
                 <Droppable 
                     droppableId={column.id}
                     isDropDisabled={isDropDisabled}
@@ -228,16 +249,11 @@ class Column extends Component {
                     {(provided) => (
                         <>
                         <Box
-                            className={
-                                (isDropDisabled) 
-                                ? (index < 4)
-                                    ? `${classes.list}`
-                                        : classes.disabledList
-                                            :`${classes.list}`}
+                            className={classes.list}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            <InnerList
+                            <InnerList 
                                 items={items}
                                 boardItems={boardItems}
                                 column={column}
@@ -251,6 +267,14 @@ class Column extends Component {
                         </>
                     )}
                 </Droppable>
+
+                {/* ADD BUTTONS */}
+                <Box className={classes.addButtons}>
+                    {assetForm}
+                    {expirationForm}
+                    {/* {addressForm} */}
+                </Box>
+
             </Card>
         );
     };
