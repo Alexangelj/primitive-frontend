@@ -35,6 +35,7 @@ export const colors = {
     darkBlue: '#070a0e',
     leafGreen: '#88ca6a',
     lightSuccess: '#ccffca',
+    lightBanner: '#4b4e57',
     
 }
 
@@ -277,6 +278,9 @@ const mainTheme = {
         },
         button: {
             main: colors.lightgreen,
+        },
+        action: {
+            hover: colors.lightBanner,
         },
     },
     breakpoints: breakpoints,

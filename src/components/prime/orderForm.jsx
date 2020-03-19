@@ -57,18 +57,18 @@ function MultilineTextFields(props) {
     const handleChange = event => {
         setValue(event.target.value);
         let value = event.target.value;
-        props.handleAssetAmount(props.columnId, value)
+        props.handleSelectAmount(props.name, value)
     };
 
     const handleSubmit = () => {
-        props.handleAssetAmount(props.columnId, value)
+        props.handleSubmit();
     };
-  
+    console.log(props.amount);
     return (
       <form className={classes.amountForm} noValidate autoComplete="off" onSubmit={(e) => e.preventDefault()}>
           <TextField
-            placeholder='Amount'
-            value={value}
+            placeholder={'Amount'}
+            value={props.amount}
             onChange={handleChange}
           />
     </form>
@@ -85,39 +85,15 @@ class OrderForm extends Component {
         const { classes } = this.props;
 
         /* GET PROPERTY DATA */
-        let cAsset, pAsset, eTimestamp, aReceiver, cAmt, pAmt, boardState, items;
-        boardState = (typeof this.props.boardStates !== 'undefined') ? this.props.boardStates : 'undefined';
-        items = this.props.items;
-        if(typeof boardState !== 'undefined') {
-            if(boardState['collateralBoard']) {
-                if(boardState['collateralBoard']['itemIds'].length > 0) {
-                    cAsset = items[boardState['collateralBoard']['itemIds'][0]].payload;
-                    cAmt = ((this.props.collateralAmount) / 10**18).toFixed(6);
-                };
-            };
-
-            if(boardState['paymentBoard']) {
-                if(boardState['paymentBoard']['itemIds'].length > 0) {
-                    pAsset = items[boardState['paymentBoard']['itemIds'][0]].payload;
-                    pAmt = this.props.paymentAmount;
-                };
-            };
-
-            if(boardState['expirationBoard']) {
-                if(boardState['expirationBoard']['itemIds'].length > 0) {
-                    eTimestamp = items[boardState['expirationBoard']['itemIds'][0]].payload;
-                    let date = new Date(eTimestamp * 1000);
-                    let datetime = date.toDateString();
-                    eTimestamp = datetime;
-                };
-            };
-
-            if(boardState['addressBoard']) {
-                if(boardState['addressBoard']['itemIds'].length > 0) {
-                    aReceiver = items[boardState['addressBoard']['itemIds'][0]].payload;
-                };
-            };
-        };
+        let cAsset, pAsset, eTimestamp, cAmt, pAmt;
+        cAmt = this.props.collateralAmount;
+        pAmt = this.props.paymentAmount;
+        cAsset = this.props.collateral;
+        pAsset = this.props.payment;
+        eTimestamp = this.props.expiration;
+        if(isNaN(cAmt) && typeof cAmt !== 'undefined') {
+            cAmt = 'INVALID';
+        }
 
         return (
             <>
@@ -132,23 +108,28 @@ class OrderForm extends Component {
                 <form noValidate autoComplete="off" className={classes.submitCardText}>
                       <MultilineTextFields
                         classes={classes}
-                        columnId={'collateralBoard'}
-                        handleAssetAmount={this.props.handleAssetAmount}
+                        handleSelectAmount={this.props.handleSelectAmounts}
+                        name={'collateral'}
+                        amount={cAmt}
                       />
+                      <Typography variant={'h2'} style={{ alignItems: 'center', display: 'flex', marginLeft: '8px', fontWeight: '600' }}>
+                                {cAsset}
+                        </Typography>
                 </form>
                 <Typography variant={'h2'} className={classes.submitCardTypography}>
-                        How much will the collateral cost?
+                        How much will the {cAsset} cost in {pAsset}?
                 </Typography>
             
                     <form noValidate autoComplete="off" className={classes.submitCardText}>
-                          <MultilineTextFields
-                            classes={classes}
-                            columnId={'paymentBoard'}
-                            handleAssetAmount={this.props.handleAssetAmount}
-                          />
-                          <Typography variant={'h2'} style={{ alignItems: 'center', display: 'flex', marginLeft: '8px', fontWeight: '600' }}>
-                            {pAsset}
-                        </Typography>
+                            <MultilineTextFields
+                              classes={classes}
+                              handleSelectAmount={this.props.handleSelectAmounts}
+                              name={'payment'}
+                              amount={pAmt}
+                            />
+                            <Typography variant={'h2'} style={{ alignItems: 'center', display: 'flex', marginLeft: '8px', fontWeight: '600' }}>
+                                {pAsset}
+                            </Typography>
                     </form>
                 <PrimeOutput
                     primeRows={this.props.primeRows}
@@ -161,7 +142,7 @@ class OrderForm extends Component {
                 <Button 
                     className={classes.submitCardButton}
                     disabled={(this.props.isValid) ? false : true}
-                    onClick={ () => {this.props.handleBoardSubmit()}} 
+                    onClick={ () => {this.props.handleSubmit()}} 
                 >
                     <Typography variant={'h1'}>
                         Create Prime
