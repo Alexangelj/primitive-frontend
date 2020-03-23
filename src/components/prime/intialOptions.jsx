@@ -44,82 +44,6 @@ const INITIAL_OPTIONS = {
     },
     callMatches: [],
     putMatches: [],
-    option: {
-        'tETH-DAI' : {
-            '1600473585' : {
-                'call': [
-                    {
-                        index: 0,
-                        bid: '-',
-                        ask: '10',
-                        qty: '5',
-                        strike: '100',
-                        strikeUnits: 'DAI',
-                        collateral: '1',
-                        collateralUnits: 'tETH',
-                        expiration: '1600473585',
-                    },
-                    {
-                        index: 1,
-                        bid: '-',
-                        ask: '5',
-                        qty: '5',
-                        strike: '150',
-                        strikeUnits: 'DAI',
-                        collateral: '1',
-                        collateralUnits: 'tETH',
-                        expiration: '1600473585',
-                    },
-                    {
-                        index: 2,
-                        bid: '-',
-                        ask: '3',
-                        qty: '5',
-                        strike: '200',
-                        strikeUnits: 'DAI',
-                        collateral: '1',
-                        collateralUnits: 'tETH',
-                        expiration: '1600473585',
-                    },
-                ],
-                'put': [
-                    {
-                        index: 0,
-                        bid: '-',
-                        ask: '10',
-                        qty: '5',
-                        strike: '1',
-                        strikeUnits: 'tETH',
-                        collateral: '100',
-                        collateralUnits: 'DAI',
-                        expiration: '1600473585',
-                    },
-                    {
-                        index: 1,
-                        bid: '-',
-                        ask: '5',
-                        qty: '5',
-                        strike: '1',
-                        strikeUnits: 'tETH',
-                        collateral: '150',
-                        collateralUnits: 'DAI',
-                        expiration: '1600473585',
-                    },
-                    {
-                        index: 2,
-                        bid: '-',
-                        ask: '3',
-                        qty: '5',
-                        strike: '1',
-                        strikeUnits: 'tETH',
-                        collateral: '200',
-                        collateralUnits: 'DAI',
-                        expiration: '1600473585',
-                    },
-                ],
-            },
-        },
-    },
 
     optionV2: {
         '0x1bae37c4': { // TETH/DAI/1600473585
@@ -198,9 +122,15 @@ const INITIAL_OPTIONS = {
 
     optionGlossary: {
         'TETHDAI' : {
-            '1600473585' : '0x1bae37c4',
+            '1600473585' : 1, /* CORRESPONDS TO NONCE OF OPTION FROM OPTIONS.SOL, NONCE 1 IS THE FIRST DEPLOYED OPTION */
             'chartSymbol': 'COINBASE:ETHDAI'
         },
+    },
+
+    deployedOptions: {
+        1: {
+
+        }
     },
 
     primeTokens: {
