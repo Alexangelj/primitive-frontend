@@ -24,19 +24,30 @@ export const colors = {
     neonGreen: '#69f0ae',
     slateGrey: '#102027',
     darkPurple: '#2A1B3D',
-    primary: '#fff',
-    secondary: '#F0F0F0',
-    banner: '#23262e',
     highlight: '#fff',
     success: '#98FB98',
     button: '#A239CA',
-    background: '#1c1d23',
     darkGrey: '#1c1d23',
     darkBlue: '#070a0e',
-    leafGreen: '#88ca6a',
     lightSuccess: '#ccffca',
-    lightBanner: '#4b4e57',
     
+    primeBlue: '#cbe8ff',
+    red: '#e23d48',
+
+    primary: '#fff',
+    secondary: '#F0F0F0',
+    background: '#141c26',
+    banner: '#18222d',
+    headerBanner: '#262e3b',
+    lightBanner: '#333a4f',
+    sidePanel: '#2d2b72',
+    leafGreen: '#338736',
+    primaryButton: '#2d2b72',
+    primaryButtonLight: '#3c3899',
+    primaryButtonDark: '#191728',
+    bannerTitle: '#262e3b',
+    bannerLight: '#353f51',
+    purple: '#e461f8',
 }
 
 
@@ -255,6 +266,19 @@ const mainTheme = {
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
                 margin: '4px',
+            },
+        },
+        MuiLinearProgress: {
+            root: {
+                borderRadius: '24px',
+            },  
+            colorPrimary: {
+                backgroundColor: colors.primeBlue,
+            },
+        },
+        MuiTableCell: {
+            root: {
+                borderBottom: '0px',
             },
         },
     },
