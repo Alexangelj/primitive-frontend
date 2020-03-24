@@ -52,7 +52,7 @@ A 30 basis point fee, 0.30%, from buy orders flows directly into a pool of funds
 
 For a Prime to be minted, the collateral amount given as an argument must also be deposited into the `Prime.sol` contract. The contract defines functionality beyond the base ERC-721 contract.
 
-### `Prime.sol`
+`Prime.sol`
 - `exercise` swaps the collateral asset with the strike asset if the Prime is not expired. 
 - `close` will burn a matching Prime, allowing withdraw of assets which were deposited as collateral.
 - `withdraw` allows sellers to withdraw strike assets from exercised Primes from the `Prime.sol` contract.

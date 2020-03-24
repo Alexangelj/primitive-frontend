@@ -83,6 +83,8 @@ class OptionsChainTableV2 extends Component {
         const putOrders = putColumn['orders'];
         const minAsksCall = callColumn['minAsks'];
         const minAsksPut = putColumn['minAsks'];
+        const bidsCall = callColumn['bid'];
+        const bidsPut = putColumn['bid'];
 
         let expiration = (callColumn['options'][0]) ? callColumn['options'][0].expiration : '';
 
@@ -143,7 +145,13 @@ class OptionsChainTableV2 extends Component {
                                             }
                                         >
                                             <TableCell align='center' variant={'h1'}>{option.collateralAmt} {option.collateralSym}</TableCell>
-                                            <TableCell align='center' variant={'h1'}>{option.bid}</TableCell>
+                                            <TableCell align='center' variant={'h1'}>
+                                                {
+                                                    (bidsCall[option.index] && bidsCall[option.index] !== NaN) 
+                                                        ? (bidsCall[option.index] + ' ETH')
+                                                            : '-'
+                                                } 
+                                            </TableCell>
                                             <TableCell align='center' variant={'h1'}>
                                                 {
                                                     (minAsksCall[option.index] && minAsksCall[option.index] !== NaN) 
@@ -201,7 +209,13 @@ class OptionsChainTableV2 extends Component {
                                             }
                                         >
                                             <TableCell align='center' variant={'h1'}>{option.collateralAmt} {option.collateralSym}</TableCell>
-                                            <TableCell align='center' variant={'h1'}>{option.bid}</TableCell>
+                                            <TableCell align='center' variant={'h1'}>
+                                                {
+                                                    (bidsPut[option.index] && bidsPut[option.index] !== NaN) 
+                                                        ? (bidsPut[option.index] + ' ETH')
+                                                            : '-'
+                                                } 
+                                            </TableCell>
                                             <TableCell align='center' variant={'h1'}>
                                                 {
                                                     (minAsksPut[option.index] && minAsksPut[option.index] !== NaN)

@@ -30,22 +30,25 @@ function Header(props) {
 
     return (
         <div className={classes.chainHeader}>
-            <Typography className={classes.chainHeaderTypography1}>
+            <Typography variant={'h1'} className={classes.chainHeaderTypography1}>
                 PRIMITIVE
             </Typography>
 
-            <Typography className={classes.chainHeaderTypography2}>
+            <Typography variant={'h1'} className={classes.chainHeaderTypography2}>
                ! This project is in Alpha. Use at your own risk. !
             </Typography>
-            <Typography className={classes.chainHeaderTypography3}>
+            <Typography varient={'h3'} className={classes.chainHeaderTypography3}>
                 {(props.connected)
                     ?   
                         <Button 
                             className={classes.connectButton}
                             onClick={() => props.resetApp()}
                         >
-                        
-                                {(props.account) ? ellipseAddress(props.account) : 'Connect'}
+                            <span style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+
+                            
+                                <span style={{fontSize: '1vw'}}>{(props.account) ? ellipseAddress(props.account) : 'Connect'} </span>
+                            </span>
                         </Button>
                         :   <Button 
                                 className={classes.connectButton}
@@ -58,13 +61,10 @@ function Header(props) {
                 
                 }
                 
-                <Typography variant="caption" display="block" gutterBottom>
+                <Typography style={{fontSize: '0.5vw'}}variant="caption" display="block" gutterBottom>
                     Connected to {chain}
                 </Typography>
             </Typography>
-            {/* <Typography className={classes.chainHeaderTypography}>
-                {address}
-            </Typography> */}
             
         </div>
     );

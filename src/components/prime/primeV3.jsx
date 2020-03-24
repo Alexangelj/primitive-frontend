@@ -14,6 +14,9 @@ import FunctionsIcon from '@material-ui/icons/Functions';
 import HomeIcon from '@material-ui/icons/Home';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import CheckIcon from '@material-ui/icons/Check';
+import Modal from '@material-ui/core/Modal';
+import { Typography } from '@material-ui/core';
+import AllInclusiveIcon from '@material-ui/icons/AllInclusive';
 import TradingViewWidget, { Themes } from 'react-tradingview-widget';
 import Web3Modal from 'web3modal';
 import Web3 from 'web3';
@@ -32,6 +35,8 @@ import OptionsChainTableV3 from './optionsChainTableV3';
 import PositionsTableV2 from './positionsTableV2';
 import OpenPosition from './openPosition';
 import Fortmatic from "fortmatic";
+import AccountOrders from './accountOrders';
+
 
 const providerOptions = {
     fortmatic: {
@@ -116,6 +121,11 @@ const styles = theme => ({
         alignItems: 'center',
         textAlign: 'center',
         fontWeight: '700',
+        flexWrap: 'nowrap',
+        [theme.breakpoints.up('sm')]: {
+            flexWrap: 'wrap',
+        },
+        
     },
     chainHeaderTypography2: {
         width: '50%',
@@ -124,10 +134,19 @@ const styles = theme => ({
         fontWeight: '700',
     },
     chainHeaderTypography3: {
+        display: 'flex',
+        flexDirection: 'row',
         width:'25%',
         alignItems: 'center',
         textAlign: 'center',
         fontWeight: '700',
+        fontSize: '0.5vw',
+        [theme.breakpoints.up('md')]: {
+            fontSize: '1.25vw',
+            flexDirection: 'column',
+        },
+        letterSpacing: '1px',
+        textTransform: 'uppercase'
     },
     
     chainBody: {
@@ -158,12 +177,17 @@ const styles = theme => ({
         alignItems: 'center',
         textAlign: 'center',
         justifyContent: 'center',
+        [theme.breakpoints.up('md')]: {
+            borderRadius: '32px',
+            marginTop: '16px',
+        },
         '&:hover': {
             backgroundColor: colors.primary,
             boxShadow: '0 0px 16px rgba(255, 255, 255, .4)',
         },
     },
     connectButton: {
+        display: 'flex',
         backgroundColor: colors.secondary,
         color: colors.banner,
         borderRadius: '32px',
@@ -426,6 +450,33 @@ const styles = theme => ({
         borderColor: colors.primary,
     },
 
+    networkModal: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        
+    },
+    networkModalDialogue: {
+        color: colors.primary,
+        backgroundColor: colors.banner,
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #262e3b',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+        
+    },
+
+    accountOrders: {
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: colors.banner,
+        width: '15%',
+        margin: '8px',
+    },
+
 });
 
 class PrimeV3 extends Component {
@@ -486,6 +537,9 @@ class PrimeV3 extends Component {
 
         this.createOptionsChain = this.createOptionsChain.bind(this);
         this.getOptionsV2 = this.getOptionsV2.bind(this);
+
+        this.getAccountOrders = this.getAccountOrders.bind(this);
+        this.handleCloseOrder = this.handleCloseOrder.bind(this);
     }
 
     componentDidMount = async () => {
@@ -530,7 +584,16 @@ class PrimeV3 extends Component {
             account: address,
         });
 
+        /* if(networkId == this.state.activeNetworkId) {
+            try {
+                await this.getPositions();
+            } catch (error) {
+                console.log({error})
+            }
+        } */
+        
         await this.getPositions();
+        await this.getAccountOrders();
         console.log({web3, provider, address,  chainId, networkId})
     };
 
@@ -561,6 +624,9 @@ class PrimeV3 extends Component {
     };
 
     getContractInstance = async (Contract) => {
+        if(typeof this.state.web3 == 'undefined') {
+            return;
+        }
         let contractName = Contract.contractName;
         if(
             this.state.instances
@@ -573,11 +639,15 @@ class PrimeV3 extends Component {
 
 
         const web3 = this.state.web3;
-        const account = await this.getAccount();
-        const networkId = await this.getNetwork();
+        const account = this.state.account;
+        const networkId = this.state.networkId;
 
         // GET CONTRACT
         const deployedNetwork = await Contract.networks[networkId];
+        if(typeof deployedNetwork == 'undefined') {
+            console.log('Network Undefined')
+            return;
+        }
         const instance = new web3.eth.Contract(
             Contract.abi,
             deployedNetwork && deployedNetwork.address,
@@ -1030,11 +1100,15 @@ class PrimeV3 extends Component {
         const account = await this.getAccount();
         const networkId = await this.getNetwork();
         let primeInstance = await this.getContractInstance(PrimeContract);
-
-        let mintedPrimes = (await primeInstance.methods.getActor(account).call()).mintedTokens;
-        this.setState({
-            mintedPrimes: mintedPrimes,
-        });
+        let mintedPrimes;
+        try {
+            mintedPrimes = (await primeInstance.methods.getActor(account).call()).mintedTokens;
+            this.setState({
+                mintedPrimes: mintedPrimes,
+            });
+        } catch (error) {
+            console.log({error})
+        }
         return mintedPrimes;
     };
 
@@ -1044,11 +1118,16 @@ class PrimeV3 extends Component {
         const account = await this.getAccount();
         const networkId = await this.getNetwork();
         let primeInstance = await this.getContractInstance(PrimeContract);
-
-        let deactivatedPrimes = (await primeInstance.methods.getActor(account).call()).deactivatedTokens;
-        this.setState({
-            deactivatedPrimes: deactivatedPrimes,
-        });
+        let deactivatedPrimes;
+        
+        try {
+            let deactivatedPrimes = (await primeInstance.methods.getActor(account).call()).deactivatedTokens;
+            this.setState({
+                deactivatedPrimes: deactivatedPrimes,
+            }); 
+        } catch (error) {
+            console.log(error)
+        }
         return deactivatedPrimes;
     };
 
@@ -1430,11 +1509,17 @@ class PrimeV3 extends Component {
     getPastEvents = async (instance, event) => {
         // GET PRIME CONTRACT
         const account = this.state.account;
-        let result = await instance.getPastEvents(event, {
-            /* filter: {_tokenId: tokenId}, */
-            fromBlock: 0,
-            toBlock: 'latest',
-        });
+        let result = [];
+        try {
+            result = await instance.getPastEvents(event, {
+                /* filter: {_tokenId: tokenId}, */
+                fromBlock: 0,
+                toBlock: 'latest',
+            });
+        } catch (error) {
+            console.log({error})
+        }
+        
         let returnValues = [];
         for(var i = 0; i < result.length; i++){
             returnValues.push(result[i].returnValues);
@@ -1453,14 +1538,19 @@ class PrimeV3 extends Component {
     getActivePrimes = async () => {
         let minted = await this.getMintedPrimes();
         let inactive = await this.getDeactivatedPrimes();
-        /* let ownedPrimes = await this.getPrimeInventory(); */
+        let activePrimes;
 
-        let activePrimes = minted.filter(val => !inactive.includes(val));
-        /* activePrimes = ownedPrimes.filter(val => !activePrimes.includes(val)); */
-        console.log({activePrimes})
-        this.setState({
-            activePrimes: activePrimes
-        });
+        try {
+            activePrimes = minted.filter(val => !inactive.includes(val));
+            /* activePrimes = ownedPrimes.filter(val => !activePrimes.includes(val)); */
+            console.log({activePrimes})
+            this.setState({
+                activePrimes: activePrimes
+            });
+        } catch(error) {
+            console.log({error})
+        }
+        
         return activePrimes;
     };
 
@@ -1521,8 +1611,6 @@ class PrimeV3 extends Component {
         const primeInstance = await this.getContractInstance(PrimeContract);
         const exchangeInstance = await this.getContractInstance(Exchange);
 
-        let nonce = await primeInstance.methods.nonce().call();
-
         function createData(tokenId, xis, yakSymbol, zed, waxSymbol, pow, gem, position) {
             return { tokenId, xis, yakSymbol, zed, waxSymbol, pow, gem, position };
         };
@@ -1545,7 +1633,15 @@ class PrimeV3 extends Component {
         */
 
         let primeRows = [];
-        let activePrimes = await this.getActivePrimes(); /* UNION OF MINTED AND ! DEACTIVATED PRIME */
+        let activePrimes = [];
+        try {
+            activePrimes = await this.getActivePrimes();
+            if(typeof activePrimes == 'undefined') {
+                activePrimes = [];
+            }
+        } catch (error) {
+            console.log({error})
+        }
         let userOwnedPrimes = [];
         let position = {};
         let userTokens = [];
@@ -1966,10 +2062,18 @@ class PrimeV3 extends Component {
         const web3 = this.state.web3;
         const account = this.state.account;
         const networkId = this.state.networkId;
-        let primeInstance = await this.getContractInstance (PrimeContract);
-        let exchangeInstance = await this.getContractInstance(Exchange);
-        const optionsInstance = await this.getContractInstance(Options);
-
+        let primeInstance, exchangeInstance, optionsInstance;
+        try {
+            primeInstance = await this.getContractInstance (PrimeContract);
+            exchangeInstance = await this.getContractInstance(Exchange);
+            optionsInstance = await this.getContractInstance(Options);
+        } catch (error) {
+            console.log({error})
+        }
+        
+        if(networkId !== this.state.activeNetworkId) {
+            console.log('Please connect to active network:', this.state.activeNetworkId);
+        }
         let optionsChainObj = await optionsInstance.methods.getOptionChain(id).call();
         let baseRatio, chain, collateral, expiration, strike, increment;
         baseRatio = optionsChainObj.baseRatio;
@@ -2065,6 +2169,82 @@ class PrimeV3 extends Component {
             'put': {},
         };
 
+        let maxBids = { 
+            'call': {},
+            'put': {},
+        }
+
+        async function getUnfilledBuyOrders(instance) {
+            let result = [];
+            try {
+                result = await instance.getPastEvents('BuyOrderUnfilled', {
+                    fromBlock: 0,
+                    toBlock: 'latest',
+                });
+            } catch (error) {
+                console.log({error})
+            }
+
+            let returnValues = [];
+            let nonces = [];
+            for(var i = 0; i < result.length; i++){
+                returnValues.push(result[i].returnValues);
+                nonces.push(result[i].returnValues._nonce)
+                
+            }
+            console.log({returnValues, nonces})
+            return nonces;
+        };
+
+
+        let bidNonces = [];
+        bidNonces = await getUnfilledBuyOrders(exchangeInstance);
+        let matchingObj = {
+            'call': {},
+            'put': {},
+        };
+        if(bidNonces) {
+            let matchingIndex = [];
+            
+            for(var i = 0; i < bidNonces.length; i++) {
+                let buyOrderUnfilled = await exchangeInstance.methods._buyOrdersUnfilled(chain, bidNonces[i]).call();
+                /* console.log({buyOrderUnfilled}) */
+                let nonce = bidNonces[i];
+                let xis = await web3.utils.fromWei(buyOrderUnfilled.xis);
+                let zed = await web3.utils.fromWei(buyOrderUnfilled.zed);
+                let bid = await web3.utils.fromWei(buyOrderUnfilled.bidPrice);
+                matchingIndex = await getUnfilledMatches(option[chain]['call'], xis, zed);
+                /* console.log({nonce, xis, zed, bid, matchingIndex}) */
+                if(matchingIndex) {
+                    let prevMatch = matchingObj['call'][matchingIndex];
+                    if(typeof prevMatch == 'undefined') {
+                        matchingObj['call'][matchingIndex] = bid;
+                    }
+                    if(prevMatch > bid) {
+                        matchingObj['call'][matchingIndex] = bid;
+                    }
+                    
+                }
+
+                matchingIndex = await getUnfilledMatches(option[chain]['put'], xis, zed);
+                /* console.log({nonce, xis, zed, bid, matchingIndex}) */
+                if(matchingIndex) {
+                    let prevMatch = matchingObj['put'][matchingIndex];
+                    if(typeof prevMatch == 'undefined') {
+                        matchingObj['put'][matchingIndex] = bid;
+                    }
+                    if(prevMatch > bid) {
+                        matchingObj['put'][matchingIndex] = bid;
+                    }
+                    
+                }
+                
+            }
+            /* console.log({matchingObj},) */
+        }
+
+
+    
         function compareNumbers(a, b) {
             return a - b;
         }
@@ -2073,6 +2253,27 @@ class PrimeV3 extends Component {
         let callMatches = await compareOptionsArray(callOptions);
         let callOrders = await getOrders(callMatches);
         /* let expiration = '1600473585'; */
+
+        async function getUnfilledMatches(options, xis2, zed2) {
+            let match;
+            for(var x = 0; x < options.length; x++) {
+                let xis = (options[`${x}`].collateralAmt);
+                let zed = (options[`${x}`].strikeAmt);
+                if((xis != xis2)) {
+                    continue;
+                }
+
+                if(
+                    xis === xis2
+                    && zed === zed2
+                ) {
+                    match = x;
+                }
+            }
+
+            return match;
+        }
+
 
         for(var i = 0; i < callOptions.length; i++) {
             let callAsks = [];
@@ -2089,7 +2290,7 @@ class PrimeV3 extends Component {
         }
 
 
-        console.log({minAsks})
+        /* console.log({minAsks}) */
         let callColumn = {
             'chain': chain,
             'expiration': expiration,
@@ -2097,6 +2298,7 @@ class PrimeV3 extends Component {
             'matches': callMatches,
             'orders': callOrders,
             'minAsks': minAsks['call'],
+            'bid': matchingObj['call'],
 
         };
 
@@ -2125,6 +2327,7 @@ class PrimeV3 extends Component {
             'matches': putMatches,
             'orders': putOrders,
             'minAsks': minAsks['put'],
+            'bid': matchingObj['put'],
         };
 
         
@@ -2598,6 +2801,7 @@ class PrimeV3 extends Component {
             this.setState({
                 loadingChain: true,
                 chartSymbol: symbol,
+                selectedExpiration: selected,
             });
             this.getOptionsV2(option);
         } else if(selectedExpiration && isPair) {
@@ -2606,6 +2810,7 @@ class PrimeV3 extends Component {
             this.setState({
                 loadingChain: true,
                 chartSymbol: symbol,
+                selectedPair: selected,
             });
             this.getOptionsV2(option);
         } else {
@@ -2696,21 +2901,200 @@ class PrimeV3 extends Component {
 
     };
 
-    
+    getAccountOrders = async () => {
+        const web3 = this.state.web3;
+        const networkId = this.state.networkId;
+        const account = this.state.account;
+        let exchangeInstance, optionsInstance, primeInstance;
+        try {
+            primeInstance = await this.getContractInstance(PrimeContract);
+            exchangeInstance = await this.getContractInstance(Exchange);
+            optionsInstance = await this.getContractInstance(Options);
+        } catch (error) {
+            console.log({error})
+        }
+        
+        if(exchangeInstance) {
+            console.log('exchange instance defined')
+        } else {
+            return;
+        }
+
+        let chain;
+        let id;
+        for(var i = 0; i < (this.state.activeChains).length; i++ ) { 
+            let optionsChainObj = await optionsInstance.methods.getOptionChain((this.state.activeChains)[i]).call();
+            chain = optionsChainObj.chain;
+            console.log({id, chain})
+        }
+        /* if(
+            this.state.selectedPair
+            && this.state.selectedExpiration
+        ) { 
+            id = this.state.optionGlossary[this.state.selectedPair][this.state.selectedExpiration];
+            let optionsChainObj = await optionsInstance.methods.getOptionChain(id).call();
+            chain = optionsChainObj.chain;
+            console.log({id, chain})
+        } else {
+            console.log('NO CHAIN SELECTED')
+            return;
+        } */
+
+        /* GET UNFILLED BUY ORDERS */
+        let unfilledNonce = await exchangeInstance.methods._unfilledNonce(chain).call();
+        console.log({unfilledNonce})
+        let accountOrders = [];
+        for(var i = 0; i < unfilledNonce; i++) {
+            let buyOrderUnfilled = await exchangeInstance.methods._buyOrdersUnfilled(chain, i).call();
+            if(buyOrderUnfilled.bidPrice > 0) {
+                let buyer = buyOrderUnfilled.buyer;
+                if(account === buyer) {
+                    let bid = await web3.utils.fromWei(buyOrderUnfilled.bidPrice);
+                    let data = createData(i, true, true, bid, false)
+                    accountOrders.push(data)
+                }
+            }
+        }
+
+        /* GET REGULAR BUY ORDERS FOR TOKENS LISTED ALREADY */
+        let nonce = await primeInstance.methods.nonce().call();
+        console.log({nonce})
+        for(var i = 1; i <= nonce; i++) {
+            let buyOrder = await exchangeInstance.methods._buyOrders(i).call();
+            if(buyOrder.bidPrice > 0) {
+                let buyer = buyOrder.buyer;
+                if(account === buyer) {
+                    let bid = await web3.utils.fromWei(buyOrder.bidPrice);
+                    let data = createData(i, true, false, bid, buyOrder._filled)
+                    accountOrders.push(data)
+                }
+            }
+        }
+
+        /* GET SELL ORDERS FOR TOKEN IDS */
+        for(var i = 1; i <= nonce; i++) {
+            let sellOrder = await exchangeInstance.methods._sellOrders(i).call();
+            if(sellOrder.askPrice > 0) {
+                let seller = sellOrder.seller;
+                if(account === seller) {
+                    let ask = await web3.utils.fromWei(sellOrder.askPrice);
+                    let data = createData(i, false, false, ask, sellOrder._filled)
+                    accountOrders.push(data)
+                }
+            }
+        }
+
+
+        let filledOrders = await this.getPastEvents(exchangeInstance, 'FillOrder');
+        console.log({filledOrders})
+        for(var i = 0; i < filledOrders.length; i++) {
+            let buyOrder;
+            if(filledOrders[i]._buyer === account) {
+                buyOrder = true;
+            }
+            if(filledOrders[i]._seller === account) {
+                buyOrder = false;
+            }
+            if(typeof buyOrder !== 'undefined') {
+                let price = await web3.utils.fromWei(filledOrders[i]._filledPrice);
+                let data = createData(i, buyOrder, false, price, true)
+                accountOrders.push(data)
+            }
+            
+        }
+
+        function createData(nonce, isBuyOrder, isUnfilledBuyOrder, price, isFilled) {
+            return { nonce, isBuyOrder, isUnfilledBuyOrder, price, isFilled};
+        }
+
+        console.log({accountOrders})
+        this.setState({
+            accountOrders: accountOrders
+        })
+        return accountOrders;
+
+    };
+
+    handleCloseOrder = async (isBuyOrder, isUnfilledBuyOrder, nonce) => {
+        const web3 = this.state.web3;
+        const account = this.state.account;
+        const networkId = this.state.networkId;
+
+        let exchangeInstance, optionsInstance, primeInstance;
+        try {
+            primeInstance = await this.getContractInstance(PrimeContract);
+            exchangeInstance = await this.getContractInstance(Exchange);
+            optionsInstance = await this.getContractInstance(Options);
+        } catch (error) {
+            console.log({error})
+        }
+
+        if(isUnfilledBuyOrder) {
+            let chain;
+            for(var i = 0; i < (this.state.activeChains).length; i++ ) { 
+                let optionsChainObj = await optionsInstance.methods.getOptionChain((this.state.activeChains)[i]).call();
+                chain = optionsChainObj.chain;
+                console.log({nonce, chain})
+
+                let closeBuyOrder;
+                this.getPendingTx(true, 1, 1);
+                try {
+                    closeBuyOrder = await exchangeInstance.methods.closeUnfilledBuyOrder(chain, nonce).send({from: account});
+                    if(closeBuyOrder) {
+                        this.getPendingTx(false);
+                    }
+                } catch(error) {
+                    this.getPendingTx(false);
+                }
+                
+
+            }
+        } else {
+            let closeOrder;
+            this.getPendingTx(true, 1, 1);
+            try {
+                closeOrder = await exchangeInstance.methods.closeOrder(nonce).send({from: account});
+                if(closeOrder) {
+                    this.getPendingTx(false);
+                }
+            } catch(error) {
+                this.getPendingTx(false);
+            }
+            
+        }
+
+        
+    };
 
     render () {
         const { classes } = this.props;
-        
-        let optionChainName = 'tETH / DAI';
-        let pair = (this.state.selectedPair) ? this.state.selectedPair : '';
         let expiration = this.state.selectedExpiration ? this.state.selectedExpiration : undefined;
         if(expiration) {
             const date = new Date(expiration * 1000);
             expiration = date.toDateString();
         }
-        
+
         return(
-            <>
+            <> 
+            {
+                <Modal
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                    className={classes.networkModal}
+                    open={
+                        (this.state.networkId) 
+                            ? (this.state.networkId !== this.state.activeNetworkId) 
+                                ? true 
+                                    : false 
+                                    
+                                : false}
+
+                >
+                    <div className={classes.networkModalDialogue}>
+                      <Typography>Please connect to Network: {this.state.activeNetworkName}</Typography>
+                    </div>
+                </Modal>
+            }
             <div className={classes.root} key='root'>
 
                 {/* FLEX DIRECTION COLUMN - SIDE PANEL */}
@@ -2745,13 +3129,13 @@ class PrimeV3 extends Component {
                             onOptionsChain: true,
                         })}
                     >
-                        <FunctionsIcon />
+                        <DetailsIcon />
                     </IconButton>
                 </Tooltip>
 
                 <Tooltip title={'Primitive'}>
                     <IconButton className={classes.selectProduct} disabled>
-                        <DetailsIcon />
+                        <AllInclusiveIcon />
                     </IconButton>
                 </Tooltip>
                 
@@ -2771,7 +3155,7 @@ class PrimeV3 extends Component {
 
                 {/* FLEX DIRECTION COLUMN - CORE PANEL */}
                 <Box style={{display: 'flex', flexDirection: 'column', width: '100%', minHeight: '100vh',}}>
-
+                
                     <Header
                         className={classes.header}
                         address={(this.state.account) ? this.state.account : ''}
@@ -2824,6 +3208,8 @@ class PrimeV3 extends Component {
                                 autosize
                             />
                         </Card>
+
+                        
 
                         {/* FLEX DIRECTION COLUMN - INTERFACE FOR POSITIONS/DERIVITIVES/PRIMITIVES*/}                       
                         {(this.state.onOptionsChain)
@@ -2897,8 +3283,15 @@ class PrimeV3 extends Component {
                                 </Card>
                         }
                         
-                    </Box>
+                        </Box>
 
+                        {/* FLEX DIRECTION COLUMN - ACCOUNT ORDERS */}
+                        <Card className={classes.accountOrders} key='orders'>
+                            <AccountOrders 
+                                accountOrders={this.state.accountOrders}
+                                handleCloseOrder={this.handleCloseOrder}
+                            />
+                        </Card>
                     </Box>
                         
                 </Box>

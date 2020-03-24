@@ -30,7 +30,7 @@ export const colors = {
     darkGrey: '#1c1d23',
     darkBlue: '#070a0e',
     lightSuccess: '#ccffca',
-    
+    disabledGrey: '#eceff1',
     primeBlue: '#cbe8ff',
     red: '#e23d48',
 
@@ -43,11 +43,13 @@ export const colors = {
     sidePanel: '#2d2b72',
     leafGreen: '#338736',
     primaryButton: '#2d2b72',
+    primaryButtonTransparent: 'rgb(52,60,160, 0.9)',
     primaryButtonLight: '#3c3899',
     primaryButtonDark: '#191728',
     bannerTitle: '#262e3b',
     bannerLight: '#353f51',
     purple: '#e461f8',
+    lightPurple: '#b9baf7',
 }
 
 
@@ -77,26 +79,27 @@ const mainTheme = {
         userNextVariants: true,
         secondary: colors.secondary,
         h1: {
-            fontSize: '12px',
             fontWeight: '600',
+            fontSize: '1vw',
             [breakpoints.up('md')]: {
-                fontSize: '16px',
+                fontSize: '1.25vw',
             },
             letterSpacing: '1px',
             textTransform: 'uppercase'
         },
         h2: {
-            fontSize: '10px',
             fontWeight: '500',
+            fontSize: '0.75vw',
             [breakpoints.up('md')]: {
-                fontSize: '12px',
+                fontSize: '1vw',
             },
             letterSpacing: '1px',
             textTransform: 'uppercase',
         },
         h3: {
-            fontSize: '0.50rem',
             fontWeight: '250',
+            fontSize: '0.50rem',
+            
             [breakpoints.up('md')]: {
                 fontSize: '0.70rem',
             },
@@ -219,8 +222,9 @@ const mainTheme = {
             },
             body1: {
                 fontWeight: '500',
+                fontSize: '1vw',
                 letterSpacing: '1px',
-                textTransform: 'uppercase',
+                textTransform: 'uppercase'
             },
             body2: {
                 fontWeight: '500',

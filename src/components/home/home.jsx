@@ -10,53 +10,66 @@ import Fade from '@material-ui/core/Fade';
 import Link from '@material-ui/core/Link';
 import Page from './page';
 import DFCP from './dfcplogo.svg'
+import Box from '@material-ui/core/Box';
+import DetailsIcon from '@material-ui/icons/Details';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
+import AllInclusiveIcon from '@material-ui/icons/AllInclusive';
+
+
+
+
 
 
 const styles = theme => ({
     root: {
-        flex: 1,
         display: 'flex',
-        width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
         [theme.breakpoints.up('sm')]: {
-            flexDirection: 'row',
-        }
+            flexDirection: 'column',
+        },
+        backgroundColor: colors.primary,
+        height: '100%',
+        minHeight: '100vh'
     },
     card: {
-        flex: '1',
         height: '25vh',
-        width: '100%',
+        width: '30%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
         cursor: 'pointer',
         borderRadius: '0px',
-        transition: 'background-color 0.2s linear',
+        transition: 'background-color 0.4s linear',
+        /* margin: '16px', */
+        marginBottom: '32px',
         [theme.breakpoints.up('sm')]: {
-            height: '80vh',
-            minWidth: '20%',
+            height: '70vh',
+            minWidth: '40vh',
             minHeight: '50vh',
-        }
+        },
+        borderRadius: '8px',
+
     },
     prime: {
-        backgroundColor: colors.white,
+        backgroundColor: colors.primary,
         '&:hover': {
-            backgroundColor: colors.primeBlue,
+            backgroundColor: colors.primaryButtonTransparent,
             '& .title': {
-                color: colors.background
+                color: colors.primary
             },
             '& .icon': {
-                color: colors.background
+                color: colors.primary
             },
         },
         '& .title': {
-            color: colors.blue
+            color: colors.background
         },
         '& .icon': {
-            color: colors.blue
+            color: colors.background
         }
     },
     prompt: {
@@ -77,6 +90,7 @@ const styles = theme => ({
     },
     title: {
         padding: '24px',
+        width: '100%',
         paddingBottom: '0px',
         [theme.breakpoints.up('sm')]: {
             paddingBottom: '24px'
@@ -85,6 +99,7 @@ const styles = theme => ({
         letterSpacing: '2px',
         textTransform: 'uppercase',
         fontFamily: ['Roboto Mono', 'sans-serif'].join(","),
+        textAlign: 'center',
     },
     icon: {
         fontSize: '60px',
@@ -93,18 +108,22 @@ const styles = theme => ({
         }
     },
     brand: {
-        flex: '1',
         padding: '16px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         height: '5vh',
         borderRadius: '0px',
+        color: colors.background,
         [theme.breakpoints.up('sm')]: {
             height: '5vh',
             minWidth: '20%',
             minHeight: '5vh',
-        }
+        },
+        fontWeight: '600',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        fontFamily: ['Roboto Mono', 'sans-serif'].join(","),
     },
     loading: {
         display: 'flex',
@@ -116,6 +135,35 @@ const styles = theme => ({
             height: '100vh',
             minWidth: '20%',
             minHeight: '50vh',
+        }
+    },
+    cardDisabled: {
+        height: '25vh',
+        width: '30%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        borderRadius: '0px',
+        transition: 'background-color 0.2s linear',
+        /* margin: '16px', */
+        marginBottom: '32px',
+        [theme.breakpoints.up('sm')]: {
+            height: '70vh',
+            minWidth: '40vh',
+            minHeight: '50vh',
+        },
+        borderRadius: '8px',
+
+    },
+
+    primeDisabled: {
+        backgroundColor: colors.disabledGrey,
+        '& .title': {
+            color: colors.grey
+        },
+        '& .icon': {
+            color: colors.grey
         }
     },
 });
@@ -146,45 +194,51 @@ class Home extends Component {
     render () {
         const { classes, t } = this.props;
         return (
-            <Page>
-                <div className={ classes.root }>
-                    {!this.state.done ? (
-                        <Grid item className={classes.loading}>
-                            <Fade in={this.state.loading} timeout={500}>
-                                <img alt="" src={loading} />
-                            </Fade>
-                        </Grid> 
-                    ) : (
-                        <Fade in={this.state.done} timeout={500}>
-                            <Grid container className={classes.root}>
-                                <Grid item xs={12}>
-                                    <Typography variant={'h1'} className={ `${classes.brand}`}>
-
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={4}>
-                                        <Typography variant={'h1'} className={ `${classes.brand} ${classes.title} title`}>
-                                            Select a product
-                                            </Typography>
-                                    <Link 
-                                        href='/prime'
-                                        /* style={{ textDecoration: 'none' }} */
-                                        underline='none'
-                                    >
-                                    <Card className={`${classes.card} ${classes.prime}`} href='/prime' /* onClick={ () => { this.navigate('/prime') }} */>
-                                        {/* <GraphicEqIcon className={ `${classes.icon} icon` }/> */}
-                                        <img alt="" src={DFCP} />
-                                        <Typography variant={'h1'} className={ `${classes.title} title`}>Prime</Typography>
-                                        <Typography variant={'h2'} className={ `${classes.title} title`}>ERC-20 Derivative</Typography>
-                                    </Card>
-                                    </Link>
-                                </Grid>
-                            </Grid>
-                        </Fade>
-                    )
-                }
-                </div>
-            </Page>
+            
+                <Box className={classes.root}>
+                    
+                    <Typography variant={'h1'} className={ `${classes.brand} ${classes.title} title`}>
+                        Select a product
+                    </Typography>
+                    <Box style={{display: 'flex', flexDirection: 'row',}}>
+                    <Box style={{display: 'flex', flexDirection: 'column',}}>
+                        <Link 
+                            href='/prime'
+                            underline='none'
+                            className={`${classes.card}`}
+                        >
+                        <Card className={`${classes.card} ${classes.prime}`} href='/prime'>
+                        
+                        
+                            <DetailsIcon className={ `${classes.icon} icon` }/>
+                            <Typography variant={'h1'} className={ `${classes.title} title`}>Prime</Typography>
+                            <Typography variant={'h2'} className={ `${classes.title} title`}>ERC-721 Option</Typography>
+                            
+                        </Card>
+                        </Link>
+                    </Box>
+                    <Box style={{display: 'flex', flexDirection: 'column', marginLeft: '24px',}}>
+                        <Link 
+                            
+                            underline='none'
+                            className={`${classes.cardDisabled}`}
+                            disabled
+                        >
+                        <Card variant={'disabled'} className={`${classes.cardDisabled} ${classes.primeDisabled}`} href='/prime'>
+                        
+                        
+                            <AllInclusiveIcon className={ `${classes.icon} icon` }/>
+                            <Typography variant={'h1'} className={ `${classes.title} title`}>{'...'}</Typography>
+                            <Typography variant={'h2'} className={ `${classes.title} title`}>To be announced...</Typography>
+                            
+                        </Card>
+                        </Link>
+                    </Box>
+                    </Box>
+                                    
+                                
+                </Box>
+            
         );
     };
     

@@ -1,4 +1,6 @@
 const INITIAL_OPTIONS = {
+    activeNetworkId: 4,
+    activeNetworkName: 'Rinkeby',
     fetching: false,
     address: "",
     account: "",
@@ -131,6 +133,8 @@ const INITIAL_OPTIONS = {
 
         }
     },
+
+    activeChains: [1],
 
     primeTokens: {
 

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
-import getWeb3 from '../getWeb3';
 
 function Page({ 
   children, 
